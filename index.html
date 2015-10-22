@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="Bazi Calculator">
+		<meta name="author" content="Pii">
+		<link rel="icon" href="favicon.ico">
+		<title>Bazi Calculator</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<script>
+			var STEM = '甲,乙,丙,丁,戊,己,庚,辛,壬,癸'.split(','), //
+			BRANCH = '子,丑,寅,卯,辰,巳,午,未,申,酉,戌,亥'.split(',')//
+			chart = {}, getPillar = function(code) {
+				var emptiness = 10 - 2 * Math.floor(code * .1);
+				return {
+					stem : STEM[(code % 10 || 10) - 1],
+					branch : BRANCH[(code % 12 || 12) - 1],
+					emptiness : [BRANCH[emptiness], BRANCH[emptiness + 1]]
+				};
+			};
+
+			$(document).ready(function() {
+
+				// init chart & setRow
+				(function() {
+					var rows = 'year,month,day,time'.split(',');
+					for (var i in rows)
+					chart[rows[i]] = {
+						stem : $('.row-' + rows[i] + ' .col-stem .circle'),
+						branch : $('.row-' + rows[i] + ' .col-branch .circle')
+					}
+					chart.angel = {
+						stem : $('.angel-pillar .circle:first'),
+						branch : $('.angel-pillar .circle:last'),
+						emptiness : [$('.angel-pillar .emptiness:first'), $('.angel-pillar .emptiness:last')]
+					};
+					drawPillar = function(row, pillar) {
+						console.log(row);
+						switch(row) {
+							case 'year':
+							case 'month':
+							case 'day':
+							case 'time':
+								chart[row].stem.text(pillar.stem).next().text(pillar.emptiness[0]);
+								chart[row].branch.text(pillar.branch).next().text(pillar.emptiness[1]);
+								break;
+							case 'angel' :
+								chart.angel.stem.text(pillar.stem);
+								chart.angel.branch.text(pillar.branch);
+								chart.angel.emptiness[0].text(pillar.emptiness[0]);
+								chart.angel.emptiness[1].text(pillar.emptiness[1]);
+						}
+
+					};
+				})();
+
+				// init code to choose
+				(function() {
+					var options = '';
+					for (var i = 1, ii = 60; i <= 60; i++)
+						options += '<option>' + i + '</option>';
+					$('.pillar-code').html(options).change(function() {
+						drawPillar($(this).data('row'), getPillar($(this).val()));
+					});
+				})();
+
+			});
+		</script>
+		<style>
+			.natal-chart {
+				width: 432px;
+				display: inline-block;
+			}
+			.col-label {
+				width: 50px;
+				text-align: right;
+			}
+			.col-code {
+				width: 50px;
+			}
+			.col-stem, .col-branch {
+				width: 140px;
+				height: 140px;
+				text-align: center;
+			}
+			.col-label, .col-code {
+				line-height: 100px;
+				vertical-align: top;
+			}
+			.col-label, .col-code, .col-stem, .col-branch {
+				display: inline-block;
+				margin: 0 5px;
+			}
+			.circle {
+				border-radius: 50%;
+				border: 2px solid #333;
+				width: 100px;
+				height: 100px;
+				box-shadow: 4px 4px 5px #333, inset 0 0 10px #333;
+				text-align: center;
+				line-height: 100px;
+				font-weight: bold;
+				font-size: 35px;
+				display: inline-block;
+			}
+			.emptiness.left {
+				text-align: right;
+			}
+			.emptiness.right {
+				text-align: left;
+			}
+			.emptiness {
+				font-size: 30px;
+				font-weight: bold;
+			}
+			.angel-pillar {
+				vertical-align: top;
+				display: inline-block;
+				text-align: center;
+				width: 140px;
+			}
+			.angel-pillar .emptiness {
+				display: inline-block;
+				margin: 0 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Bazi Calculator</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li class="active">
+							<a href="#">Home</a>
+						</li>
+						<li>
+							<a href="#about">About</a>
+						</li>
+						<li>
+							<a href="#contact">Contact</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<br>
+		<br>
+		<br>
+		<div class="container">
+			<div class='row'>
+				<div class='col-xs-12'>
+					<h1>Bazi</h1>
+				</div>
+				<div class='col-xs-12'>
+					Stems: 甲乙丙丁戊己庚辛壬癸
+					<br>
+					Branches: 子丑寅卯辰巳午未申酉戌亥
+				</div>
+			</div>
+			<br>
+			<br>
+			<div class='natal-chart'>
+				<div class='row-year'>
+					<div class='col-label'>
+						Year
+					</div>
+					<div class='col-code'>
+						<select class='pillar-code' data-row='year'></select>
+					</div>
+					<div class='col-stem'>
+						<div class='circle'>
+							甲
+						</div>
+						<div class='emptiness left'>
+							戌
+						</div>
+					</div>
+					<div class='col-branch'>
+						<div class='circle'>
+							子
+						</div>
+						<div class='emptiness right'>
+							亥
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class='row-month'>
+					<div class='col-label'>
+						Month
+					</div>
+					<div class='col-code'>
+						<select class='pillar-code' data-row='month'></select>
+					</div>
+					<div class='col-stem'>
+						<div class='circle'>
+							甲
+						</div>
+						<div class='emptiness left'>
+							戌
+						</div>
+					</div>
+					<div class='col-branch'>
+						<div class='circle'>
+							子
+						</div>
+						<div class='emptiness right'>
+							亥
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class='row-day'>
+					<div class='col-label'>
+						Day
+					</div>
+					<div class='col-code'>
+						<select class='pillar-code' data-row='day'></select>
+					</div>
+					<div class='col-stem'>
+						<div class='circle'>
+							甲
+						</div>
+						<div class='emptiness left'>
+							戌
+						</div>
+					</div>
+					<div class='col-branch'>
+						<div class='circle'>
+							子
+						</div>
+						<div class='emptiness right'>
+							亥
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class='row-time'>
+					<div class='col-label'>
+						Time
+					</div>
+					<div class='col-code'>
+						<select class='pillar-code' data-row='time'></select>
+					</div>
+					<div class='col-stem'>
+						<div class='circle'>
+							甲
+						</div>
+						<div class='emptiness left'>
+							戌
+						</div>
+					</div>
+					<div class='col-branch'>
+						<div class='circle'>
+							子
+						</div>
+						<div class='emptiness right'>
+							亥
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='angel-pillar'>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				Angel &nbsp;&nbsp; <select class='pillar-code' data-row='angel'></select>
+				<br>
+				<br>
+				<div class='circle'>
+					甲
+				</div>
+				<div class='clear-fix'></div>
+				<br>
+				<div class='circle'>
+					子
+				</div>
+				<div class='clear-fix'></div>
+				<br>
+				<div class='emptiness left'>
+					戌
+				</div>
+				<div class='emptiness right'>
+					亥
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
